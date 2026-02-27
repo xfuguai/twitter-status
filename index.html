@@ -24,13 +24,13 @@
 <script>
   // Firebase設定
   const firebaseConfig = {
-    apiKey: "AIzaSyDx-nFTU5CnsS491STZMeAxULAxtAY9erF",
-    authDomain: "twitter-status-64315.firebaseapp.com",
-    databaseURL: "https://twitter-status-64315-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "twitter-status-64315",
-    storageBucket: "twitter-status-64315.firebasestorage.app",
-    messagingSenderId: "771857885579",
-  appId: "1:771857885579:web:993ebf3e4ab5dff5b2e78e"
+    apiKey: "AIzaSyD2-6vhLU9tQoSXnbVcALnBgnMZUbATFnE",
+    authDomain: "twitter-status-be396.firebaseapp.com",
+    databaseURL: "https://twitter-status-be396-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "twitter-status-be396",
+    storageBucket: "twitter-status-be396.firebasestorage.app",
+    messagingSenderId: "534805849424",
+    appId: "1:534805849424:web:dc463d17c883af245ef855"
   };
   
         // グラフの初期化
@@ -91,7 +91,6 @@ setInterval(updateChart, 60000);
 
 // ボタンをクリックしたときの動作
 document.getElementById('reportButton').addEventListener('click', function() {
-    // Cookie確認
   if (localStorage.getItem('reported')) {
         alert('既に報告済みです！');
         return;
@@ -100,7 +99,6 @@ document.getElementById('reportButton').addEventListener('click', function() {
     const now = new Date();
     const hour = now.getHours();
     
-    // Firebaseにデータを保存
  const dateKey = now.getFullYear() + '-' + 
     String(now.getMonth()+1).padStart(2,'0') + '-' + 
     String(now.getDate()).padStart(2,'0') + '-' + 
@@ -113,6 +111,7 @@ database.ref('reports/' + dateKey).transaction((current) => {
     
     alert('報告ありがとうございます！');
 });
+
 // コメント投稿
 document.getElementById('commentButton').addEventListener('click', function() {
     const text = document.getElementById('commentInput').value.trim();
@@ -151,7 +150,6 @@ database.ref('comments').orderByChild('time').limitToLast(100).on('value', (snap
 });
     </script> 
 
-
-
+</div>
 </body>
 </html>
