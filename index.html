@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X(Twitter) 不具合報告</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>X(Twitter) 不具合報告</h1>
+    <button id="reportButton">不具合を報告</button>
+    
+    <div id="chartContainer">
+        <canvas id="statusChart"></canvas>
+    </div>
+    <div id="commentSection">
+    <h2>不具合の状況を教えてください</h2>
+    <textarea id="commentInput" placeholder="例：タイムラインが表示されない" maxlength="200"></textarea>
+    <button id="commentButton">コメントを投稿</button>
+    <div id="commentList"></div>
+       <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+  // Firebase設定
+  const firebaseConfig = {
+    apiKey: "AIzaSyDx-nFTU5CnsS491STZMeAxULAxtAY9erF",
+    authDomain: "twitter-status-64315.firebaseapp.com",
+    databaseURL: "https://twitter-status-64315-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "twitter-status-64315",
+    storageBucket: "twitter-status-64315.firebasestorage.app",
+    messagingSenderId: "771857885579",
+  appId: "1:771857885579:web:993ebf3e4ab5dff5b2e78e"
+  };
+  
+        // グラフの初期化
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['0時', '1時', '2時', '3時', '4時', '5時', '6時', '7時', '8時', '9時', '10時', '11時', 
+                         '12時', '13時', '14時', '15時', '16時', '17時', '18時', '19時', '20時', '21時', '22時', '23時'],
+                datasets: [{
+                    label: '不具合報告数',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)'
+}]
+        },
+        options: {
+            scales: {
+                x: {
+                    ticks: {
+                        callback: function(val, index) {
+                            return index % 2 === 0 ? this.getLabelForValue(val) : '';
+                        },
+                        maxRotation: 0,
+                        minRotation: 0
+                    }
+                }
+            }
+        }
+    });
+        firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+</script>
+<script>
+        // ボタンをクリックしたときの動作
+// Firebaseからデータを読み込んでグラフを更新
+function updateChart() {
+    const now = new Date();
+    const labels = [];
+    const keys = [];
+    for (let i = 11; i >= 0; i--) {
+        const d = new Date(now - i * 3600000);
+        const key = d.getFullYear() + '-' +
+            String(d.getMonth()+1).padStart(2,'0') + '-' +
+            String(d.getDate()).padStart(2,'0') + '-' +
+            String(d.getHours()).padStart(2,'0');
+        labels.push(i === 0 ? '今' : String(d.getHours()) + '時');
+        keys.push(key);
+    }
+    chart.data.labels = labels;
+    database.ref('reports').once('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        chart.data.datasets[0].data = keys.map(k => data[k] || 0);
+        chart.update();
+    });
+}
+updateChart();
+setInterval(updateChart, 60000);
+
+// ボタンをクリックしたときの動作
+document.getElementById('reportButton').addEventListener('click', function() {
+    // Cookie確認
+  if (localStorage.getItem('reported')) {
+        alert('既に報告済みです！');
+        return;
+    }
+    
+    const now = new Date();
+    const hour = now.getHours();
+    
+    // Firebaseにデータを保存
+ const dateKey = now.getFullYear() + '-' + 
+    String(now.getMonth()+1).padStart(2,'0') + '-' + 
+    String(now.getDate()).padStart(2,'0') + '-' + 
+    String(hour).padStart(2,'0');
+database.ref('reports/' + dateKey).transaction((current) => {
+    return (current || 0) + 1;
+});
+    
+  localStorage.setItem('reported', 'true');
+    
+    alert('報告ありがとうございます！');
+});
+// コメント投稿
+document.getElementById('commentButton').addEventListener('click', function() {
+    const text = document.getElementById('commentInput').value.trim();
+    if (!text) return;
+
+    const commentsRef = database.ref('comments');
+    commentsRef.push({
+        text: text,
+        time: Date.now()
+    });
+
+    document.getElementById('commentInput').value = '';
+});
+
+// コメント表示（最新100件のみ）
+database.ref('comments').orderByChild('time').on('value', (snapshot) => {
+    const list = document.getElementById('commentList');
+    list.innerHTML = '';
+    const comments = [];
+    snapshot.forEach(child => comments.push({key: child.key, ...child.val()}));
+    
+    // 100件超えたら古いものを削除
+    if (comments.length > 100) {
+        const toDelete = comments.slice(0, comments.length - 100);
+        toDelete.forEach(c => database.ref('comments/' + c.key).remove());
+    }
+
+    // 新しい順に表示
+    comments.slice(-100).reverse().forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'comment';
+        const date = new Date(c.time).toLocaleString('ja-JP');
+        div.innerHTML = `<span class="comment-time">${date}</span><p>${c.text}</p>`;
+        list.appendChild(div);
+    });
+});
+    </script> 
+
+
+
+</body>
+</html>
