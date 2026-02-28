@@ -127,7 +127,7 @@ document.getElementById('commentButton').addEventListener('click', function() {
 });
 
 // コメント表示（最新100件のみ）
-database.ref('comments').orderByChild('time').limitToLast(100).on('value', (snapshot) => {
+database.ref('comments').orderByChild('time').on('value', (snapshot) => {
     const list = document.getElementById('commentList');
     list.innerHTML = '';
     const comments = [];
