@@ -109,20 +109,38 @@
             document.getElementById('commentInput').value = '';
         });
 
-        // コメント表示（新しい順、最大100件）
-        database.ref('comments').on('value', (snapshot) => {
-            const list = document.getElementById('commentList');
-            list.innerHTML = '';
-            const comments = [];
-            snapshot.forEach(child => comments.push({ key: child.key, ...child.val() }));
-            comments.sort((a, b) => b.time - a.time).slice(0, 100).forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'comment';
-                const date = new Date(c.time).toLocaleString('ja-JP');
-                div.innerHTML = `<span class="comment-time">${date}</span><p>${c.text}</p>`;
-                list.appendChild(div);
-            });
+// コメント表示（安全版）
+database.ref('comments').on('value', (snapshot) => {
+    const list = document.getElementById('commentList');
+    list.innerHTML = '';
+
+    const comments = [];
+
+    snapshot.forEach(child => {
+        const val = child.val();
+        if (!val || !val.text) return; // ← textが無いデータを除外
+        comments.push({ key: child.key, ...val });
+    });
+
+    comments
+        .sort((a, b) => (b.time || 0) - (a.time || 0))
+        .slice(0, 100)
+        .forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'comment';
+
+            const date = c.time
+                ? new Date(c.time).toLocaleString('ja-JP')
+                : '';
+
+            div.innerHTML = `
+                <span class="comment-time">${date}</span>
+                <p>${c.text}</p>
+            `;
+
+            list.appendChild(div);
         });
+});
     </script>
 </body>
 </html>
