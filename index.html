@@ -54,7 +54,11 @@
             },
 options: {
     scales: {
-        x: { ticks: { maxRotation: 0, minRotation: 0 } }
+        x: { 
+    ticks: { maxRotation: 0, minRotation: 0 },
+    min: 12,
+    max: 23
+}
     },
     plugins: {
         zoom: {
@@ -74,7 +78,7 @@ options: {
             const now = new Date();
             const labels = [];
             const keys = [];
-            for (let i = 11; i >= 0; i--) {
+            for (let i = 23; i >= 0; i--) {
                 const d = new Date(now - i * 3600000);
                 const key = d.getFullYear() + '-' +
                     String(d.getMonth() + 1).padStart(2, '0') + '-' +
