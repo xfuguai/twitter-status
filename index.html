@@ -6,6 +6,8 @@
     <title>X(Twitter) 不具合報告</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
 </head>
 <body>
     <h1>X(Twitter) 不具合報告</h1>
@@ -50,11 +52,21 @@
                     backgroundColor: 'rgba(75, 192, 192, 0.6)'
                 }]
             },
-            options: {
-                scales: {
-                    x: { ticks: { maxRotation: 0, minRotation: 0 } }
-                }
+options: {
+    scales: {
+        x: { ticks: { maxRotation: 0, minRotation: 0 } }
+    },
+    plugins: {
+        zoom: {
+            pan: { enabled: true, mode: 'x' },
+            zoom: {
+                wheel: { enabled: true },
+                pinch: { enabled: true },
+                mode: 'x'
             }
+        }
+    }
+}
         });
 
         // グラフをリアルタイム更新
