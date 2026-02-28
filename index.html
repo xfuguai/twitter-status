@@ -148,10 +148,13 @@ database.ref('comments').on('value', (snapshot) => {
                 ? new Date(c.time).toLocaleString('ja-JP')
                 : '';
 
-            div.innerHTML = `
-                <span class="comment-time">${date}</span>
-                <p>${c.text}</p>
-            `;
+            const span = document.createElement('span');
+span.className = 'comment-time';
+span.textContent = date;
+const p = document.createElement('p');
+p.textContent = c.text;
+div.appendChild(span);
+div.appendChild(p);
 
             list.appendChild(div);
         });
