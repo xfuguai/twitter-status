@@ -80,7 +80,7 @@ function updateChart() {
         keys.push(key);
     }
     chart.data.labels = labels;
-    database.ref('reports').once('value', (snapshot) => {
+    database.ref('reports').on('value', (snapshot) => {
         const data = snapshot.val() || {};
         chart.data.datasets[0].data = keys.map(k => data[k] || 0);
         chart.update();
