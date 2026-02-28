@@ -115,8 +115,17 @@ options: {
 
         // コメント投稿
         document.getElementById('commentButton').addEventListener('click', function () {
-            const text = document.getElementById('commentInput').value.trim();
-            if (!text) return;
+    const text = document.getElementById('commentInput').value.trim();
+    if (!text) return;
+
+    const lastComment = localStorage.getItem('lastCommentTime');
+    const now = Date.now();
+    if (lastComment && now - lastComment < 30000) {
+        const remaining = Math.ceil((30000 - (now - lastComment)) / 1000);
+        alert(`あと${remaining}秒待ってください`);
+        return;
+    }
+    localStorage.setItem('lastCommentTime', now);
             database.ref('comments').push({
                 text: text,
                 time: Date.now()
