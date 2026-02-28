@@ -55,16 +55,7 @@
 options: {
     scales: {
         x: { 
-ticks: { 
-    maxRotation: 0, 
-    minRotation: 0,
-    callback: function(val, index) {
-        const label = this.getLabelForValue(val);
-        if (window.innerWidth < 600) {
-            return (index % 6 === 0 || index === 23 || label === '今') ? label : '';
-        }
-        return label;
-    }
+ticks: { maxRotation: 0, minRotation: 0 },
 },
     min: 12,
     max: 23
