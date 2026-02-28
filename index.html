@@ -131,16 +131,10 @@ database.ref('comments').on('value', (snapshot) => {
     const list = document.getElementById('commentList');
     list.innerHTML = '';
     const comments = [];
-    snapshot.forEach(child => comments.push({key: child.key, ...child.val()}));
-    
-    // 100件超えたら古いものを削除
-    if (comments.length > 100) {
-        const toDelete = comments.slice(0, comments.length - 100);
-        toDelete.forEach(c => database.ref('comments/' + c.key).remove());
-    }
+    snapshot.forEach(child => comments.push({key: child.key, ...child.val()}))
 
     // 新しい順に表示
-comments.sort((a, b) => b.time - a.time).slice(0, 100).forEach(c => {
+    comments.sort((a, b) => b.time - a.time).slice(0, 100).forEach(c => {
         const div = document.createElement('div');
         div.className = 'comment';
         const date = new Date(c.time).toLocaleString('ja-JP');
