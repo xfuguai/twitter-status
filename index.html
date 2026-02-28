@@ -127,7 +127,7 @@ document.getElementById('commentButton').addEventListener('click', function() {
 });
 
 // コメント表示（最新100件のみ）
-database.ref('comments').orderByChild('time').on('value', (snapshot) => {
+database.ref('comments').on('value', (snapshot) => {
     const list = document.getElementById('commentList');
     list.innerHTML = '';
     const comments = [];
@@ -140,7 +140,7 @@ database.ref('comments').orderByChild('time').on('value', (snapshot) => {
     }
 
     // 新しい順に表示
-    comments.slice(-100).reverse().forEach(c => {
+comments.sort((a, b) => b.time - a.time).slice(0, 100).forEach(c => {
         const div = document.createElement('div');
         div.className = 'comment';
         const date = new Date(c.time).toLocaleString('ja-JP');
